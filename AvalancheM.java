@@ -34,7 +34,7 @@ public class AvalancheM extends Rollin {
 
 
         // decide which one to change if not instant complete
-        return GetSmartSwap(roll, dice);
+        return GetProbSwap(roll, dice);
 
 
         // return R.nextInt(6);
@@ -48,7 +48,7 @@ public class AvalancheM extends Rollin {
         return b;
     }
 
-    private int GetSmartSwap(int roll, int[] dice) {
+    private int GetProbSwap(int roll, int[] dice) {
         ArrayList<int[]> sets = new ArrayList<>();
 
         // Get current sets
