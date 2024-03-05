@@ -45,10 +45,6 @@ public class Test {
         } else {
             int numOfTrials = 1000000;
 
-            // runTestRandom(numOfTrials);
-            // runTestAvalanche(numOfTrials);
-            // runTestPomo(numOfTrials);
-            // runTestProbSel(numOfTrials);
             RunTestGeneric(numOfTrials, new RandomRoller(), "rand");
             RunTestGeneric(numOfTrials, new Avalanche(), "Aval");
             RunTestGeneric(numOfTrials, new PlusOrMinusOne(), "Pomo");
