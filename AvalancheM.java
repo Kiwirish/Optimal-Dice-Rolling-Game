@@ -136,7 +136,7 @@ public class AvalancheM extends Rollin {
     /**
      * InnerAvalancheM
      */
-    public class Scoring {
+    public class Scoring implements Comparator<Scoring> {
         private int swapIndex;
         private float score;
         
@@ -151,6 +151,15 @@ public class AvalancheM extends Rollin {
 
         public float GetScore() {
             return score;
+        }
+
+        public int compare(Scoring s1, Scoring s2) {
+            if (s1.GetScore() == s2.GetScore()) 
+                return 0; 
+            else if (s1.GetScore() > s2.GetScore()) 
+                return 1; 
+            else
+                return -1; 
         }
     }
 
