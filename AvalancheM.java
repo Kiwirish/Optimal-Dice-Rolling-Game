@@ -10,9 +10,14 @@ import javax.xml.crypto.dsig.keyinfo.KeyValue;
 public class AvalancheM extends Rollin {
 
     Random R = new Random();
+    private boolean debug = false;
 
     public AvalancheM() {
 
+    }
+
+    public AvalancheM(boolean debug) {
+        this.debug = debug;
     }
 
     @Override
@@ -28,6 +33,7 @@ public class AvalancheM extends Rollin {
 
             copy[i] = roll;
             if (Rollin.isComplete(copy)) {
+                // System.out.println("ProbSel force complete");
                 return i;
             }
         }
@@ -53,13 +59,20 @@ public class AvalancheM extends Rollin {
 
         // Get current sets
         for (int[][] si : setIndices) {
-            if (isSet(si[0], dice) && isSet(si[1], dice)) {
+            if (isSet(si[0], dice)) {
                 sets.add(si[0]);
+            }
+
+            if (isSet(si[1], dice)) {
+                sets.add(si[1]);
             }
         }
 
         if (sets.size() < 1) { // if no set then random
+            // System.out.println("ProbSel no set use random (" + sets.size() + ")");
             return R.nextInt(6);
+        } else {
+            // System.out.println("ProbSel use smart sel");
         }
 
         Scoring[] scores = new Scoring[sets.size()];
@@ -95,7 +108,7 @@ public class AvalancheM extends Rollin {
 
             int[] setCopy = CopyArray(set);
 
-            if (i == 4) {
+            if (i == 3) {
                 // Do no swap check
             } else {
                 setCopy[i] = roll; // Swap number
@@ -136,7 +149,7 @@ public class AvalancheM extends Rollin {
     /**
      * InnerAvalancheM
      */
-    public class Scoring implements Comparator<Scoring> {
+    public class Scoring implements Comparable<Scoring> {
         private int swapIndex;
         private float score;
         
@@ -153,17 +166,19 @@ public class AvalancheM extends Rollin {
             return score;
         }
 
-        public int compare(Scoring s1, Scoring s2) {
-            if (s1.GetScore() == s2.GetScore()) 
+        @Override
+        public int compareTo(AvalancheM.Scoring o) {
+            if (this.GetScore() == o.GetScore()) 
                 return 0; 
-            else if (s1.GetScore() > s2.GetScore()) 
+            else if (this.GetScore() < o.GetScore()) 
                 return 1; 
             else
                 return -1; 
         }
+
     }
 
-    public class IndexAndSet implements Comparator<IndexAndSet>  {
+    public class IndexAndSet  {
         HashSet<Integer> set;
         int indexSwap;
 
@@ -184,15 +199,6 @@ public class AvalancheM extends Rollin {
         public float GetScore() {
             return set.size() / 6;
         }
-
-        public int compare(IndexAndSet s1, IndexAndSet s2) {
-            if (s1.GetScore() == s2.GetScore()) 
-                return 0; 
-            else if (s1.GetScore() > s2.GetScore()) 
-                return 1; 
-            else
-                return -1; 
-        }
     }
 
     public class IndexAndSetComparator implements Comparator<IndexAndSet> { 
@@ -202,7 +208,7 @@ public class AvalancheM extends Rollin {
         { 
             if (s1.GetHastSet().size() == s2.GetHastSet().size()) 
                 return 0; 
-            else if (s1.GetHastSet().size() > s2.GetHastSet().size()) 
+            else if (s1.GetHastSet().size() < s2.GetHastSet().size()) 
                 return 1; 
             else
                 return -1; 

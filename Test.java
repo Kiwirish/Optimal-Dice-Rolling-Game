@@ -5,44 +5,51 @@ public class Test {
     static Random R = new Random();
 
     public static void main(String[] args) {
-        // Rollin lazy = new LazyRoller();
-        // Rollin rand = new RandomRoller();
-        // // New stuff
-        // Rollin Pomo = new PlusOrMinusOne();
-        // int[] d = new int[6];
-        // for (int i = 0; i < d.length; i++) {
-        // d[i] = R.nextInt(6) + 1;
-        // }
+        boolean testIndividual = false;
 
-        // System.out.println("Initial dice: " + java.util.Arrays.toString(d));
-        // int roll = R.nextInt(6) + 1;
-        // System.out.println("Roll: " + roll);
-        // // System.out.println("LazyRoller changes: " + lazy.handleRoll(roll, d));
-        // // System.out.println("RandomRoller changes: " + rand.handleRoll(roll, d));
-        // int re = Pomo.handleRoll(roll, d);
-        // if (re == -1) {
-        // System.out.println("Intial Six were complete");
-        // }
-        // d[re] = roll;
-        // System.out.println("Pomo changes: index " + re);
-        // System.out.println("Dice: " + java.util.Arrays.toString(d));
+        Rollin individual = new AvalancheM();
+        String individualName = "ProbSel";
 
-        // System.out.println("Running random until complete...");
-        // while (!Rollin.isComplete(d)) {
-        // roll = R.nextInt(6) + 1;
-        // System.out.println("Roll: " + roll);
-        // // int toChange = rand.handleRoll(roll, d);
-        // int toChange = Pomo.handleRoll(roll, d);
-        // // System.out.println("RandomRoller changes: " + toChange);
-        // System.out.println("Pomo changes: index " + toChange);
-        // d[toChange] = roll;
-        // System.out.println("Dice: " + java.util.Arrays.toString(d));
-        // }
-        int numOfTrials = 1000000;
-        runTestRandom(numOfTrials);
-        runTestAvalanche(numOfTrials);
-        runTestPomo(numOfTrials);
-        runTestProbSel(numOfTrials);
+        if (testIndividual) {
+
+            // New stuff
+            int[] d = new int[6];
+            for (int i = 0; i < d.length; i++) {
+                d[i] = R.nextInt(6) + 1;
+            }
+    
+            System.out.println("Initial dice: " + java.util.Arrays.toString(d));
+            int roll = R.nextInt(6) + 1;
+            System.out.println("Roll: " + roll);
+
+            int re = individual.handleRoll(roll, d);
+            if (re == -1) {
+                System.out.println("Initial Six were complete");
+            }
+            d[re] = roll;
+            System.out.println(individualName + " changes: index " + re);
+            System.out.println("Dice: " + java.util.Arrays.toString(d));
+    
+            System.out.println("Running random until complete...");
+            while (!Rollin.isComplete(d)) {
+                roll = R.nextInt(6) + 1;
+                System.out.println("Roll: " + roll);
+                // int toChange = rand.handleRoll(roll, d);
+                int toChange = individual.handleRoll(roll, d);
+                // System.out.println("RandomRoller changes: " + toChange);
+                System.out.println(individualName + " changes: index " + toChange);
+                d[toChange] = roll;
+                System.out.println("Dice: " + java.util.Arrays.toString(d));
+            }
+
+        } else {
+            int numOfTrials = 1000000;
+
+            runTestRandom(numOfTrials);
+            runTestAvalanche(numOfTrials);
+            runTestPomo(numOfTrials);
+            runTestProbSel(numOfTrials);
+        }        
     }
 
     // Test block for comparing average runs int terms of number of swaps
@@ -144,7 +151,7 @@ public class Test {
     }
 
     public static void runTestProbSel(int numOfTrials) {
-        Rollin Pomo = new AvalancheM();
+        Rollin probSel = new AvalancheM();
         double totalRolls = 0;
         int alreadyComplete = 0;
 
@@ -156,7 +163,7 @@ public class Test {
 
             int roll = R.nextInt(6) + 1;
             // intialise dice
-            int re = Pomo.handleRoll(roll, d);
+            int re = probSel.handleRoll(roll, d);
             if (re == -1) {
                 // was already complete
                 alreadyComplete++;
@@ -165,7 +172,7 @@ public class Test {
                 totalRolls++;
                 while (!Rollin.isComplete(d)) {
                     roll = R.nextInt(6) + 1;
-                    int toChange = Pomo.handleRoll(roll, d);
+                    int toChange = probSel.handleRoll(roll, d);
                     d[toChange] = roll;
                     totalRolls++;
                 }
