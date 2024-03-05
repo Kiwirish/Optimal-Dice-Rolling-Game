@@ -42,6 +42,7 @@ public abstract class Rollin {
      * @return The index of the die whose value will be replaced by the roll, or
      * any int outside of 0 to 5 if no replacement is made.
      */
+    
     public abstract int handleRoll(int roll, int[] dice);
 
     // The methods below are provided for convenience.
