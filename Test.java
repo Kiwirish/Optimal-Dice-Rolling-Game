@@ -45,17 +45,18 @@ public class Test {
         } else {
             int numOfTrials = 1000000;
 
-            runTestRandom(numOfTrials);
-            runTestAvalanche(numOfTrials);
-            runTestPomo(numOfTrials);
-            runTestProbSel(numOfTrials);
+            // runTestRandom(numOfTrials);
+            // runTestAvalanche(numOfTrials);
+            // runTestPomo(numOfTrials);
+            // runTestProbSel(numOfTrials);
+            RunTestGeneric(numOfTrials, new RandomRoller(), "rand");
+            RunTestGeneric(numOfTrials, new Avalanche(), "Aval");
+            RunTestGeneric(numOfTrials, new PlusOrMinusOne(), "Pomo");
+            RunTestGeneric(numOfTrials, new AvalancheM(), "ProbSel");
         }        
     }
 
-    // Test block for comparing average runs int terms of number of swaps
-    public static void runTestRandom(int numOfTrials) {
-
-        Rollin rand = new RandomRoller();
+    public static void RunTestGeneric(int numOfTrials, Rollin rollin, String name) {
         double totalRolls = 0;
         int alreadyComplete = 0;
 
@@ -67,7 +68,7 @@ public class Test {
 
             int roll = R.nextInt(6) + 1;
             // intialise dice
-            int re = rand.handleRoll(roll, d);
+            int re = rollin.handleRoll(roll, d);
             if (re == -1) {
                 // was already complete
                 alreadyComplete++;
@@ -76,110 +77,15 @@ public class Test {
                 totalRolls++;
                 while (!Rollin.isComplete(d)) {
                     roll = R.nextInt(6) + 1;
-                    int toChange = rand.handleRoll(roll, d);
+                    int toChange = rollin.handleRoll(roll, d);
                     d[toChange] = roll;
                     totalRolls++;
                 }
             }
         }
-        System.out.println("Average rolls for rand = " + totalRolls / numOfTrials);
+        System.out.println("Average rolls for " + name + " = " + totalRolls / numOfTrials);
         System.out.println("total already complete = " + alreadyComplete);
     }
 
-    public static void runTestAvalanche(int numOfTrials) {
-        Rollin aval = new Avalanche();
-        double totalRolls = 0;
-        int alreadyComplete = 0;
-
-        for (int j = 0; j < numOfTrials; j++) {
-            int[] d = new int[6];
-            for (int i = 0; i < d.length; i++) {
-                d[i] = R.nextInt(6) + 1;
-            }
-
-            int roll = R.nextInt(6) + 1;
-            // intialise dice
-            int re = aval.handleRoll(roll, d);
-            if (re == -1) {
-                // was already complete
-                alreadyComplete++;
-            } else {
-                d[re] = roll;
-                totalRolls++;
-                while (!Rollin.isComplete(d)) {
-                    roll = R.nextInt(6) + 1;
-                    int toChange = aval.handleRoll(roll, d);
-                    d[toChange] = roll;
-                    totalRolls++;
-                }
-            }
-        }
-        System.out.println("Average rolls for aval = " + totalRolls / numOfTrials);
-        System.out.println("total already complete = " + alreadyComplete);
-    }
-
-    public static void runTestPomo(int numOfTrials) {
-        Rollin Pomo = new PlusOrMinusOne();
-        double totalRolls = 0;
-        int alreadyComplete = 0;
-
-        for (int j = 0; j < numOfTrials; j++) {
-            int[] d = new int[6];
-            for (int i = 0; i < d.length; i++) {
-                d[i] = R.nextInt(6) + 1;
-            }
-
-            int roll = R.nextInt(6) + 1;
-            // intialise dice
-            int re = Pomo.handleRoll(roll, d);
-            if (re == -1) {
-                // was already complete
-                alreadyComplete++;
-            } else {
-                d[re] = roll;
-                totalRolls++;
-                while (!Rollin.isComplete(d)) {
-                    roll = R.nextInt(6) + 1;
-                    int toChange = Pomo.handleRoll(roll, d);
-                    d[toChange] = roll;
-                    totalRolls++;
-                }
-            }
-        }
-        System.out.println("Average rolls for pomo = " + totalRolls / numOfTrials);
-        System.out.println("total already complete = " + alreadyComplete);
-    }
-
-    public static void runTestProbSel(int numOfTrials) {
-        Rollin probSel = new AvalancheM();
-        double totalRolls = 0;
-        int alreadyComplete = 0;
-
-        for (int j = 0; j < numOfTrials; j++) {
-            int[] d = new int[6];
-            for (int i = 0; i < d.length; i++) {
-                d[i] = R.nextInt(6) + 1;
-            }
-
-            int roll = R.nextInt(6) + 1;
-            // intialise dice
-            int re = probSel.handleRoll(roll, d);
-            if (re == -1) {
-                // was already complete
-                alreadyComplete++;
-            } else {
-                d[re] = roll;
-                totalRolls++;
-                while (!Rollin.isComplete(d)) {
-                    roll = R.nextInt(6) + 1;
-                    int toChange = probSel.handleRoll(roll, d);
-                    d[toChange] = roll;
-                    totalRolls++;
-                }
-            }
-        }
-        System.out.println("Average rolls for probSel = " + totalRolls / numOfTrials);
-        System.out.println("total already complete = " + alreadyComplete);
-    }
 
 }
