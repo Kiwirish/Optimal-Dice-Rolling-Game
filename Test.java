@@ -7,6 +7,8 @@ public class Test {
     public static void main(String[] args) {
         Rollin lazy = new LazyRoller();
         Rollin rand = new RandomRoller();
+        Rollin blakes = new FirstAttemptBlake();
+
         int[] d = new int[6];
         for(int i = 0; i < d.length; i++) {
             d[i] = R.nextInt(6) + 1;
@@ -17,6 +19,8 @@ public class Test {
         System.out.println("Roll: " + roll);
         System.out.println("LazyRoller changes: " + lazy.handleRoll(roll, d));
         System.out.println("RandomRoller changes: " + rand.handleRoll(roll, d));
+        System.out.println("BlakeRoller changes: " + blakes.handleRoll(roll, d));
+
 
         System.out.println("Running random until complete...");
         while (!Rollin.isComplete(d)) {
