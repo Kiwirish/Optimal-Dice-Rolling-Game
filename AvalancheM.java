@@ -58,6 +58,10 @@ public class AvalancheM extends Rollin {
             }
         }
 
+        if (sets.size() < 1) { // if no set then random
+            return R.nextInt(6);
+        }
+
         Scoring[] scores = new Scoring[sets.size()];
 
         // Compute a relative set score based of the remaining numbers
