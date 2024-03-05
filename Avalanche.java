@@ -25,9 +25,6 @@ public class Avalanche extends Rollin {
             }
         }
 
-
-        // decide which one to change if not instant complete
-
         return R.nextInt(6);
     }
 
@@ -38,5 +35,4 @@ public class Avalanche extends Rollin {
         }
         return b;
     }
-    
 }
