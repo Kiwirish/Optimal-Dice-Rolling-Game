@@ -29,7 +29,11 @@ public class JamiesAttempt extends Rollin {
         return checkRolledDiced(roll, dice);
     }
 
-    // Checks the 6 dice to see what numbers can be rolled to complete it
+    /**
+     * Checks the 6 dice to see what numbers can be rolled to complete it
+     * @param dice
+     * @return The number of possible valid roles that would complete the set
+     */
     public int checkOuts(int[] dice) {
         outSet.clear();
 
@@ -47,18 +51,31 @@ public class JamiesAttempt extends Rollin {
         return outSet.size();
     }
 
+    /**
+     * 
+     * @param roll
+     * @param dice
+     * @return The index to swap the new roll with.
+     */
     public int checkRolledDiced(int roll, int[] dice) {
-        int mostOuts = 6;
-        int outs = checkOuts(dice);
+        int mostOuts = 6; // The return swap index
+        int outs = checkOuts(dice); // The amount of number of valid roles with no change
 
         for (int i = 0; i < dice.length - 1; i++) {
             int[] copyDice = dice.clone();
             copyDice[i] = roll;
-            if (checkOuts(copyDice) > outs) {
+            if (checkOuts(copyDice) > outs) { // if there is more valid roles when swapping in the new roll then use it. update out with new highest value, 
                 outs = checkOuts(copyDice);
-                mostOuts = i;
+                mostOuts = i; // Updates the swap index return val to the index that was swapped.
             }
         }
+
+        if (mostOuts == 0) {
+            // ToDo: if there is not outs but is at least one set, then use either Blake or Matt
+
+            // Other wise use random ?
+        }
+        
 
         return mostOuts;
     }

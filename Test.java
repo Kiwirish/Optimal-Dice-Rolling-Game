@@ -7,7 +7,8 @@ public class Test {
     public static void main(String[] args) {
         boolean testIndividual = false;
 
-        Rollin individual = new AvalancheM(true);
+        Rollin individual = new JamiesAttempt();
+        // Rollin individual = new AvalancheM(true);
         String individualName = "ProbSel";
 
         if (testIndividual) {
@@ -20,7 +21,7 @@ public class Test {
                     d[i] = R.nextInt(6) + 1;
                 }
             } else {
-                int[] f = { 1 , 3, 2, 1, 2, 6 };
+                int[] f = { 1 , 1, 4, 1, 2, 6 };
                 for (int i = 0; i < d.length; i++) {
                     d[i] = f[i];
                 }
@@ -34,15 +35,24 @@ public class Test {
     
             System.out.println("Initial dice: " + java.util.Arrays.toString(d));
             int roll = R.nextInt(6) + 1;
+            // roll = 6;
             System.out.println("Roll: " + roll);
-
+            
             int re = individual.handleRoll(roll, d);
-            if (re == -1) {
-                System.out.println("Complete in one step");
-                return;
-            } else {
+            if (re >= 0 && re <= 5) {
                 d[re] = roll;
+            } else {
+                if (Rollin.isComplete(d)) {
+                    System.out.println("Complete in one step");
+                    return;
+                }
             }
+            // if (re == -1) {
+            //     System.out.println("Complete in one step");
+            //     return;
+            // } else {
+            //     d[re] = roll;
+            // }
             
             System.out.println(individualName + " changes: index " + re);
             System.out.println("Dice: " + java.util.Arrays.toString(d));
