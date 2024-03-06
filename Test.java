@@ -69,6 +69,7 @@ public class Test {
             RunTestGeneric(numOfTrials, new Avalanche(), "Aval");
             RunTestGeneric(numOfTrials, new PlusOrMinusOne(), "Pomo");
             RunTestGeneric(numOfTrials, new AvalancheM(), "ProbSel");
+            RunTestGeneric(numOfTrials, new JamiesAttempt(), "Jamies");
         }        
     }
 
