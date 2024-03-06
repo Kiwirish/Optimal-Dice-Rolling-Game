@@ -7,16 +7,30 @@ public class Test {
     public static void main(String[] args) {
         boolean testIndividual = false;
 
-        Rollin individual = new AvalancheM();
+        Rollin individual = new AvalancheM(true);
         String individualName = "ProbSel";
 
         if (testIndividual) {
 
             // New stuff
             int[] d = new int[6];
-            for (int i = 0; i < d.length; i++) {
-                d[i] = R.nextInt(6) + 1;
+            boolean useRand = true;
+            if (useRand) {
+                for (int i = 0; i < d.length; i++) {
+                    d[i] = R.nextInt(6) + 1;
+                }
+            } else {
+                int[] f = { 1 , 3, 2, 1, 2, 6 };
+                for (int i = 0; i < d.length; i++) {
+                    d[i] = f[i];
+                }
             }
+            if (Rollin.isComplete(d)) {
+                System.out.println("Complete in no steps");
+                return;
+            }
+
+
     
             System.out.println("Initial dice: " + java.util.Arrays.toString(d));
             int roll = R.nextInt(6) + 1;
@@ -24,9 +38,12 @@ public class Test {
 
             int re = individual.handleRoll(roll, d);
             if (re == -1) {
-                System.out.println("Initial Six were complete");
+                System.out.println("Complete in one step");
+                return;
+            } else {
+                d[re] = roll;
             }
-            d[re] = roll;
+            
             System.out.println(individualName + " changes: index " + re);
             System.out.println("Dice: " + java.util.Arrays.toString(d));
     
@@ -34,11 +51,14 @@ public class Test {
             while (!Rollin.isComplete(d)) {
                 roll = R.nextInt(6) + 1;
                 System.out.println("Roll: " + roll);
-                // int toChange = rand.handleRoll(roll, d);
+                
                 int toChange = individual.handleRoll(roll, d);
-                // System.out.println("RandomRoller changes: " + toChange);
+                
                 System.out.println(individualName + " changes: index " + toChange);
-                d[toChange] = roll;
+                if (toChange >= 0 && toChange <= 5) {
+                    d[toChange] = roll;
+                }
+                
                 System.out.println("Dice: " + java.util.Arrays.toString(d));
             }
 
@@ -49,6 +69,7 @@ public class Test {
             RunTestGeneric(numOfTrials, new Avalanche(), "Aval");
             RunTestGeneric(numOfTrials, new PlusOrMinusOne(), "Pomo");
             RunTestGeneric(numOfTrials, new AvalancheM(), "ProbSel");
+            RunTestGeneric(numOfTrials, new JamiesAttempt(), "Jamies");
         }        
     }
 
@@ -61,26 +82,27 @@ public class Test {
             for (int i = 0; i < d.length; i++) {
                 d[i] = R.nextInt(6) + 1;
             }
+            int roll = 0;
 
-            int roll = R.nextInt(6) + 1;
-            // intialise dice
-            int re = rollin.handleRoll(roll, d);
-            if (re == -1) {
+
+            if (Rollin.isComplete(d)) {
                 // was already complete
                 alreadyComplete++;
             } else {
-                d[re] = roll;
-                totalRolls++;
                 while (!Rollin.isComplete(d)) {
                     roll = R.nextInt(6) + 1;
                     int toChange = rollin.handleRoll(roll, d);
-                    d[toChange] = roll;
+                    if (toChange >= 0 && toChange <= 5) {
+                        d[toChange] = roll;
+                    }
+                    
                     totalRolls++;
                 }
             }
         }
-        System.out.println("Average rolls for " + name + " = " + totalRolls / numOfTrials);
-        System.out.println("total already complete = " + alreadyComplete);
+        System.out.println("Average rolls for " + name + " = " + totalRolls / (numOfTrials));
+        System.out.println("Average rolls for " + name + " (excluding immediately complete as 0 rolls) = " + totalRolls / (numOfTrials - alreadyComplete));
+        System.out.println("Immediately Complete = " + alreadyComplete);
     }
 
 
