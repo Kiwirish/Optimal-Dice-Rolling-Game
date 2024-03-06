@@ -30,7 +30,9 @@ public class AvalancheM extends Rollin {
 
             copy[i] = roll;
             if (Rollin.isComplete(copy)) {
-                // System.out.println("ProbSel force complete");
+                if (debug) {
+                    System.out.println("ProbSel force complete");
+                }
                 return i;
             }
         }
@@ -52,7 +54,7 @@ public class AvalancheM extends Rollin {
     }
 
     private int GetProbSwap(int roll, int[] dice) {
-        ArrayList<int[]> sets = new ArrayList<>();
+        ArrayList<int[]> sets = new ArrayList<>(); // a list of sets, where the set contains the indices to numbers in dice
 
         // Get current sets
         for (int[][] si : setIndices) {
@@ -66,10 +68,14 @@ public class AvalancheM extends Rollin {
         }
 
         if (sets.size() < 1) { // if no set then random
-            // System.out.println("ProbSel no set use random (" + sets.size() + ")");
+            if (debug) {
+                System.out.println("ProbSel no set use random (" + sets.size() + ")");
+            }
             return R.nextInt(6);
         } else {
-            // System.out.println("ProbSel use smart sel");
+            if (debug) {
+                System.out.println("ProbSel use smart sel");
+            }
         }
 
         Scoring[] scores = new Scoring[sets.size()];
@@ -77,20 +83,31 @@ public class AvalancheM extends Rollin {
         // Compute a relative set score based of the remaining numbers
         for (int i = 0; i < sets.size(); i++) {
             int[] altSet = new int[3]; // The numbers not in the set
+            int[] realIndices = new int[3];
             int j = 0;
             for (int k = 0; k < dice.length; k++) { // Build the alt set
                 if (!InArray(k, sets.get(i))) {
                     altSet[j] = dice[k];
+                    realIndices[j] = k;
                     j++;
                 }
             }
 
             // Do check
 
-            scores[i] = ScoreFunction(roll, altSet, dice);
+            Scoring score = ScoreFunction(roll, altSet, dice);
+            int relativeIndex = score.GetSwapIndex();
+            int actualIndex = FindIndexOfValue(relativeIndex, realIndices); // Find real index
+            score.SetSwapIndex(actualIndex);
+
+            scores[i] = score;
         }
 
         Arrays.sort(scores);
+
+        if (debug) {
+            System.out.println("ProbSel highest score: " + scores[0].GetScore() + ", Lowest: " + scores[scores.length - 1].GetScore() + ", Total: " + scores.length);
+        }
 
         return scores[0].GetSwapIndex();
     }
@@ -98,16 +115,24 @@ public class AvalancheM extends Rollin {
     private Scoring ScoreFunction(int roll, int[] set, int[] dice) {
         int[] indices = { 0, 1, 2 };
 
-        ArrayList<IndexAndSet> possibleNumbers = new ArrayList<>();
+        // ArrayList<IndexAndSet> possibleNumbers = new ArrayList<>();
+        IndexAndSet[] possibleNumbers = new IndexAndSet[4];
 
         for (int i = 0; i < 4; i++) {
-            possibleNumbers.add(new IndexAndSet(i));
+            if (i == 3) {
+                possibleNumbers[i] = new IndexAndSet(-1);
+            } else {
+                possibleNumbers[i] = new IndexAndSet(i);
+            }
+            
 
             int[] setCopy = CopyArray(set);
+            int[] diceCopy = CopyArray(dice);
 
             if (i == 3) {
                 // Do no swap check
             } else {
+                // swap the value at the index pointed to by the set
                 setCopy[i] = roll; // Swap number
             }
 
@@ -119,18 +144,33 @@ public class AvalancheM extends Rollin {
                     int[] setCopyCopy = CopyArray(setCopy);
                     setCopyCopy[j] = k;
                     if (isSet(indices, setCopyCopy)) {
-                        possibleNumbers.get(i).GetHastSet().add(k);
+                        possibleNumbers[i].GetHastSet().add(k);
                     }
                 }
             }
         }
 
         // Find highest scores
-        possibleNumbers.sort(new IndexAndSetComparator());
+        Arrays.sort(possibleNumbers);
 
-        possibleNumbers.toString();
+        
+        if (debug) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("[");
+            for (int i = 0; i < possibleNumbers.length; i++) {
+                
+                sb.append(possibleNumbers[i].toString());
+                if (i < possibleNumbers.length - 1) {
+                    sb.append(", ");
+                }
+                
+            }
+            sb.append("]");
+            
+            System.out.println("ProbSel Scoring - PN: " + sb.toString());
+        }
 
-        return new Scoring(possibleNumbers.get(0).GetSwapIndex(), possibleNumbers.get(0).GetScore());
+        return new Scoring(possibleNumbers[0].GetSwapIndex(), possibleNumbers[0].GetScore());
     }
 
     private boolean InArray(int num, int[] array) {
@@ -143,6 +183,16 @@ public class AvalancheM extends Rollin {
         return false;
     }
 
+    private int FindIndexOfValue(int value, int[] array) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == value) {
+                return i;
+            }
+        } 
+
+        return -1;
+    }
+
     /**
      * InnerAvalancheM
      */
@@ -153,6 +203,10 @@ public class AvalancheM extends Rollin {
         public Scoring(int swapIndex, float score) {
             this.swapIndex = swapIndex;
             this.score = score;
+        }
+
+        public void SetSwapIndex(int swapIndex) {
+            this.swapIndex = swapIndex;
         }
 
         public int GetSwapIndex() {
@@ -175,7 +229,7 @@ public class AvalancheM extends Rollin {
 
     }
 
-    public class IndexAndSet  {
+    public class IndexAndSet implements Comparable<IndexAndSet> {
         HashSet<Integer> set;
         int indexSwap;
 
@@ -194,7 +248,33 @@ public class AvalancheM extends Rollin {
         }
 
         public float GetScore() {
-            return set.size() / 6;
+            return (float)set.size() / 6;
+        }
+
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("[");
+            Integer[] nums = set.toArray(new Integer[0]);
+            for (int i = 0; i < nums.length; i++) {
+                
+                sb.append(nums[i].toString());
+                if (i < nums.length - 1) {
+                    sb.append(", ");
+                }
+                
+            }
+            sb.append("]");
+            return set.toString();
+        }
+
+        @Override
+        public int compareTo(AvalancheM.IndexAndSet o) {
+            if (this.GetScore() == o.GetScore()) 
+                return 0; 
+            else if (this.GetScore() < o.GetScore()) 
+                return 1; 
+            else
+                return -1; 
         }
     }
 
