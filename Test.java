@@ -73,13 +73,14 @@ public class Test {
             }
 
         } else {
-            int numOfTrials = 500000;
+            int numOfTrials = 1000000;
 
             RunTestGeneric(numOfTrials, new RandomRoller(), "rand");
             RunTestGeneric(numOfTrials, new Avalanche(), "Aval");
             RunTestGeneric(numOfTrials, new PlusOrMinusOne(), "Pomo");
             RunTestGeneric(numOfTrials, new AvalancheProbSel(), "ProbSel");
             RunTestGeneric(numOfTrials, new JamiesAttempt(), "Jamies"); // Has better worst case time then the other algorithms at ~1.37 ms but has the worst average case performance at ~0.018 ms which is ~4x slower then ProbSel and ~8x slower then Pomo
+            RunTestGeneric(numOfTrials, new JamiesAttemptMod(), "JamiesMod");
         }        
     }
 
