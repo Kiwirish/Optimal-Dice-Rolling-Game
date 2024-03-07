@@ -87,7 +87,13 @@ public class Test {
         double totalRolls = 0;
         int alreadyComplete = 0;
 
+
+        long totalTime = 0;
+        long startTime = 0;
+        long longestTime = 0;
+
         for (int j = 0; j < numOfTrials; j++) {
+            startTime = System.nanoTime();
             int[] d = new int[6];
             for (int i = 0; i < d.length; i++) {
                 d[i] = R.nextInt(6) + 1;
@@ -109,10 +115,25 @@ public class Test {
                     totalRolls++;
                 }
             }
+
+            long iterationTime = System.nanoTime() - startTime;
+            if (iterationTime > longestTime) {
+                longestTime = iterationTime;
+            }
+            totalTime += iterationTime;
         }
+
+        // long totalTime = System.nanoTime() - startTime;
+        // double timeMS = (double)totalTime / 1000000.0;
+
+        System.out.println("--------");
+        System.out.println("Average time (ms) for " + name + " = " + (((double)totalTime / (double)numOfTrials) / 1000000) + ". Total time (ms) = " + (totalTime / 1000000));
+        System.out.println("Max time (ms) for " + name + " = " + ((double)longestTime / 1000000.0));
+
         System.out.println("Average rolls for " + name + " = " + totalRolls / (numOfTrials));
         System.out.println("Average rolls for " + name + " (excluding immediately complete as 0 rolls) = " + totalRolls / (numOfTrials - alreadyComplete));
         System.out.println("Immediately Complete = " + alreadyComplete);
+        System.out.println("--------");
     }
 
 
