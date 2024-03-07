@@ -40,9 +40,6 @@ public class AvalancheProbSel extends Rollin {
 
         // decide which one to change if not instant complete
         return GetProbSwap(roll, dice);
-
-
-        // return R.nextInt(6);
     }
 
     private int[] CopyArray(int[] a) {
@@ -73,6 +70,7 @@ public class AvalancheProbSel extends Rollin {
             }
             return R.nextInt(6);
         } else {
+
             if (debug) {
                 System.out.println("ProbSel use smart sel");
             }
