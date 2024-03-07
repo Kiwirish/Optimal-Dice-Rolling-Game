@@ -88,7 +88,7 @@ public class JamiesAttemptMod extends Rollin {
             // ToDo: if there is not outs but is at least one set, then use either Blake or Matt
 
             // Other wise use random ?
-            // return R.nextInt(6);
+            // return R.nextInt(6); // Random not worth the time or performance penalty
         }
         
 
