@@ -4,16 +4,16 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Random;
 
-public class AvalancheM extends Rollin {
+public class AvalancheProbSel extends Rollin {
 
     Random R = new Random();
     private boolean debug = false;
 
-    public AvalancheM() {
+    public AvalancheProbSel() {
 
     }
 
-    public AvalancheM(boolean debug) {
+    public AvalancheProbSel(boolean debug) {
         this.debug = debug;
     }
 
@@ -218,7 +218,7 @@ public class AvalancheM extends Rollin {
         }
 
         @Override
-        public int compareTo(AvalancheM.Scoring o) {
+        public int compareTo(AvalancheProbSel.Scoring o) {
             if (this.GetScore() == o.GetScore()) 
                 return 0; 
             else if (this.GetScore() < o.GetScore()) 
@@ -268,7 +268,7 @@ public class AvalancheM extends Rollin {
         }
 
         @Override
-        public int compareTo(AvalancheM.IndexAndSet o) {
+        public int compareTo(AvalancheProbSel.IndexAndSet o) {
             if (this.GetScore() == o.GetScore()) 
                 return 0; 
             else if (this.GetScore() < o.GetScore()) 
