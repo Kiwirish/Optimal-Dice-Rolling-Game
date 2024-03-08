@@ -89,13 +89,14 @@ public class Test {
     public static void RunTestGeneric(int numOfTrials, Rollin rollin, String name) {
         double totalRolls = 0;
         int alreadyComplete = 0;
-
+        long worstRolls = 0;
 
         long totalTime = 0;
         long startTime = 0;
         long longestTime = 0;
 
         for (int j = 0; j < numOfTrials; j++) {
+            long iterationRolls = 0;
             startTime = System.nanoTime();
             int[] d = new int[6];
             for (int i = 0; i < d.length; i++) {
@@ -110,13 +111,19 @@ public class Test {
             } else {
                 while (!Rollin.isComplete(d)) {
                     roll = R.nextInt(6) + 1;
+                    
                     int toChange = rollin.handleRoll(roll, d);
                     if (toChange >= 0 && toChange <= 5) {
                         d[toChange] = roll;
                     }
                     
                     totalRolls++;
+                    iterationRolls++;
                 }
+            }
+
+            if (iterationRolls > worstRolls) {
+                worstRolls = iterationRolls;
             }
 
             long iterationTime = System.nanoTime() - startTime;
@@ -133,8 +140,9 @@ public class Test {
         System.out.println("Average time (ms) for " + name + " = " + (((double)totalTime / (double)numOfTrials) / 1000000) + ". Total time (ms) = " + (totalTime / 1000000));
         System.out.println("Max time (ms) for " + name + " = " + ((double)longestTime / 1000000.0));
 
-        System.out.println("Average rolls for " + name + " = " + totalRolls / (numOfTrials));
+        System.out.println("Average rolls for " + name + " = " + totalRolls / (numOfTrials) + " # IMPORTANT");
         System.out.println("Average rolls for " + name + " (excluding immediately complete as 0 rolls) = " + totalRolls / (numOfTrials - alreadyComplete));
+        System.out.println("Worst case rolls for " + name + " = " + worstRolls + " # IMPORTANT");
         System.out.println("Immediately Complete = " + alreadyComplete);
         System.out.println("--------");
     }
