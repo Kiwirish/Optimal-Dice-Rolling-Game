@@ -69,12 +69,6 @@ public class JamiesAttempt extends Rollin {
                 mostOuts = i; // Updates the swap index return val to the index that was swapped.
             }
         }
-
-        if (mostOuts == 0) {
-            // ToDo: if there is not outs but is at least one set, then use either Blake or Matt
-
-            // Other wise use random ?
-        }
         
 
         return mostOuts;

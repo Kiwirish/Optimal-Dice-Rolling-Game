@@ -79,16 +79,15 @@ public class JamiesAttemptMod extends Rollin {
             }
 
             if (outs >= 5) {
-                // System.out.println("Most outs");
                 break;
             }
         }
 
-        if (mostOuts == 0) {
+        if (outs == 0) {
             // ToDo: if there is not outs but is at least one set, then use either Blake or Matt
 
             // Other wise use random ?
-            // return R.nextInt(6); // Random not worth the time or performance penalty
+            return R.nextInt(6); // Random has huge positive impact of worst case time with a barely measurable improvement to average time
         }
         
 
