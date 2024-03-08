@@ -122,14 +122,15 @@ public class Test {
                 }
             }
 
-            if (iterationRolls > worstRolls) {
-                worstRolls = iterationRolls;
-            }
-
             long iterationTime = System.nanoTime() - startTime;
             if (iterationTime > longestTime) {
                 longestTime = iterationTime;
             }
+
+            if (iterationRolls > worstRolls) {
+                worstRolls = iterationRolls;
+            }
+
             totalTime += iterationTime;
         }
 
@@ -137,12 +138,12 @@ public class Test {
         // double timeMS = (double)totalTime / 1000000.0;
 
         System.out.println("--------");
-        System.out.println("Average time (ms) for " + name + " = " + (((double)totalTime / (double)numOfTrials) / 1000000) + ". Total time (ms) = " + (totalTime / 1000000));
-        System.out.println("Max time (ms) for " + name + " = " + ((double)longestTime / 1000000.0));
+        System.out.println("Average time (ms) for " + name + " = " + (((double)totalTime / (double)numOfTrials) / 1000000) + ". Total time (ms) = " + (totalTime / 1000000) + " # EFFICIENCY METRIC");
+        System.out.println("Max time (ms) for " + name + " = " + ((double)longestTime / 1000000.0) + " # EFFICIENCY METRIC");
 
-        System.out.println("Average rolls for " + name + " = " + totalRolls / (numOfTrials) + " # IMPORTANT");
+        System.out.println("Average rolls for " + name + " = " + totalRolls / (numOfTrials) + " # IMPORTANT PERFORMANCE METRIC");
         System.out.println("Average rolls for " + name + " (excluding immediately complete as 0 rolls) = " + totalRolls / (numOfTrials - alreadyComplete));
-        System.out.println("Worst case rolls for " + name + " = " + worstRolls + " # IMPORTANT");
+        System.out.println("Worst case rolls for " + name + " = " + worstRolls + " # IMPORTANT PERFORMANCE METRIC");
         System.out.println("Immediately Complete = " + alreadyComplete);
         System.out.println("--------");
     }
