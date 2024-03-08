@@ -312,19 +312,5 @@ public class AvalancheProbSel extends Rollin {
                 return -1; 
         }
     }
-
-    public class IndexAndSetComparator implements Comparator<IndexAndSet> { 
-  
-        // override the compare() method 
-        public int compare(IndexAndSet s1, IndexAndSet s2) 
-        { 
-            if (s1.GetHastSet().size() == s2.GetHastSet().size()) 
-                return 0; 
-            else if (s1.GetHastSet().size() < s2.GetHastSet().size()) 
-                return 1; 
-            else
-                return -1; 
-        } 
-    } 
     
 }
