@@ -75,13 +75,35 @@ public class Test {
         } else {
             int numOfTrials = 1000000;
 
-            RunTestGeneric(numOfTrials, new RandomRoller(), "rand");
-            RunTestGeneric(numOfTrials, new Avalanche(), "Aval");
-            RunTestGeneric(numOfTrials, new PlusOrMinusOne(), "Pomo");
-            RunTestGeneric(numOfTrials, new AvalancheProbSel(), "ProbSel");
-            // RunTestGeneric(numOfTrials, new JamiesAttempt(), "Jamies"); // Has better worst case time then the other algorithms at ~1.37 ms but has the worst average case performance at ~0.018 ms which is ~4x slower then ProbSel and ~8x slower then Pomo
-            RunTestGeneric(numOfTrials, new FirstAttemptBlake(), "Blake");
-            RunTestGeneric(numOfTrials, new JamiesAttemptMod(), "JamiesMod");
+            // RunTestGeneric(numOfTrials, new RandomRoller(), "rand");
+            // RunTestGeneric(numOfTrials, new Avalanche(), "Aval");
+            // RunTestGeneric(numOfTrials, new PlusOrMinusOne(), "Pomo");
+            // RunTestGeneric(numOfTrials, new AvalancheProbSel(), "ProbSel");
+            // // RunTestGeneric(numOfTrials, new JamiesAttempt(), "Jamies"); // Has better worst case time then the other algorithms at ~1.37 ms but has the worst average case performance at ~0.018 ms which is ~4x slower then ProbSel and ~8x slower then Pomo
+            // RunTestGeneric(numOfTrials, new FirstAttemptBlake(), "Blake");
+            // RunTestGeneric(numOfTrials, new JamiesAttemptMod(), "JamiesMod");
+
+            Rollin[] handlers = {
+                new RandomRoller(),
+                new Avalanche(),
+                new PlusOrMinusOne(),
+                new AvalancheProbSel(),
+                new FirstAttemptBlake(),
+                new JamiesAttemptMod(),
+                new JamiesAttempt()
+            };
+
+            String[] names = {
+                "Rand",
+                "Aval",
+                "Pomo",
+                "ProbSel",
+                "Blake",
+                "JamiesMod",
+                "JamiesOriginal"
+            };
+
+            RunTest(numOfTrials, handlers, names, true);
 
         }        
     }
@@ -148,5 +170,119 @@ public class Test {
         System.out.println("--------");
     }
 
+    public static void RunTest(int attemptNumOfTrials, Rollin[] handlers, String[] names, boolean includeEfficiencyMetrics) {
+
+        long[] totalRolls = new long[handlers.length];
+        long[] worstRolls = new long[handlers.length];
+
+        long[] totalTime = new long[handlers.length];
+        long[] worstTime = new long[handlers.length];
+
+        long successfulTrials = 0;
+
+        for (int trial = 0; trial < attemptNumOfTrials; trial++) {
+
+            // Generate starting dice
+            int[] startingDice = new int[6];
+            for (int i = 0; i < startingDice.length; i++) {
+                startingDice[i] = R.nextInt(6) + 1;
+            }
+
+            if (Rollin.isComplete(startingDice)) {
+                continue; // Skip
+            } else {
+                successfulTrials++;
+            }
+
+            // Set dice of each of the handlers
+            int[][] handlerDice = new int[handlers.length][6];
+
+            for (int i = 0; i < handlers.length; i++) {
+                handlerDice[i] = startingDice.clone();
+            }
+
+            boolean[] handlerComplete = new boolean[handlers.length];
+
+            long[] iterationRolls = new long[handlers.length];
+            long[] iterationTime = new long[handlers.length];
+
+            while (!AllTrue(handlerComplete)) {
+                // Whilst handlers aren't complete...
+
+                // Roll a new dice
+                int roll = R.nextInt(6) + 1;
+
+                // Call each of the handlers
+                for (int handlerID = 0; handlerID < handlers.length; handlerID++) {
+
+                    if (handlerComplete[handlerID]) {
+                        continue;
+                    }
+
+                    long startTime = System.nanoTime();
+
+                    int toChange = handlers[handlerID].handleRoll(roll, handlerDice[handlerID]);
+                    if (toChange >= 0 && toChange <= 5) {
+                        handlerDice[handlerID][toChange] = roll;
+                    }
+    
+                    long handleTime = System.nanoTime() - startTime;
+
+                    iterationRolls[handlerID]++;
+                    totalRolls[handlerID]++;
+                    iterationTime[handlerID] += handleTime;
+
+
+                    if (Rollin.isComplete(handlerDice[handlerID])) {
+                        handlerComplete[handlerID] = true;
+                    }
+                }
+            }
+
+            // Do metrics
+
+            for (int i = 0; i < handlers.length; i++) {
+
+                totalTime[i] += iterationTime[i];
+
+                if (iterationRolls[i] > worstRolls[i]) {
+                    worstRolls[i] = iterationRolls[i];
+                }
+
+                if (iterationTime[i] > worstTime[i]) {
+                    worstTime[i] = iterationTime[i];
+                }
+            }
+        }
+
+
+        // Print out metrics
+        System.out.println("------------------------");
+        for (int i = 0; i < handlers.length; i++) {
+            System.out.println("Handler name: " + names[i]);
+            System.out.println("Performance");
+            System.out.println("  Average Rolls: " + ((double)totalRolls[i] / (double)successfulTrials));
+            System.out.println("  Worst Rolls: " + worstRolls[i]);
+
+            if (includeEfficiencyMetrics) {
+                System.out.println("Efficiency");
+                System.out.println("  Average Time: " + (((double)totalTime[i] / (double)successfulTrials) / 1000000.0) + " ms");
+                System.out.println("  Worst Time: " + worstTime[i] / 1000000.0 + " ms");
+            }
+
+            System.out.println("------------------------");
+        }
+
+    }
+
+    private static boolean AllTrue(boolean[] all) {
+        for (boolean item : all) {
+            if (!item) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
 }
