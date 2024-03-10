@@ -104,6 +104,7 @@ public class Test {
             };
 
             RunTest(numOfTrials, handlers, names, true);
+            // RunTestStatOutCSV(1000, handlers, names, true);
 
         }        
     }
@@ -273,6 +274,132 @@ public class Test {
             System.out.println("------------------------");
         }
 
+    }
+
+    public static void RunTestStatOutCSV(int attemptNumOfTrials, Rollin[] handlers, String[] names, boolean includeEfficiencyMetrics) {
+
+        long successfulTrials = 0;
+
+        // Print names
+        // StringBuilder sb = new StringBuilder();
+        // for (int i = 0; i < handlers.length; i++) {
+        //     sb.append(names[i]);
+        //     sb.append("_Rolls");
+
+        //     if (includeEfficiencyMetrics) {
+        //         sb.append(", ");
+        //         sb.append(names[i]);
+        //         sb.append("_Time");
+        //     }
+
+        //     if (i < handlers.length - 1) {
+        //         sb.append(", ");
+        //     }
+        // }
+        // System.out.println(sb.toString()); // Print header
+
+        System.out.println("Trial, Rolls, Algorithm_Type");
+
+        for (int trial = 0; trial < attemptNumOfTrials; trial++) {
+
+            long[] iterationRolls = new long[handlers.length];
+            long[] iterationTime = new long[handlers.length];
+
+            // Generate starting dice
+            int[] startingDice = new int[6];
+            for (int i = 0; i < startingDice.length; i++) {
+                startingDice[i] = R.nextInt(6) + 1;
+            }
+
+            if (Rollin.isComplete(startingDice)) {
+                continue; // Skip
+            } else {
+                successfulTrials++;
+            }
+
+            // Set dice of each of the handlers
+            int[][] handlerDice = new int[handlers.length][6];
+
+            for (int i = 0; i < handlers.length; i++) {
+                handlerDice[i] = startingDice.clone();
+            }
+
+            boolean[] handlerComplete = new boolean[handlers.length];
+
+            
+
+            while (!AllTrue(handlerComplete)) {
+                // Whilst handlers aren't complete...
+
+                // Roll a new dice
+                int roll = R.nextInt(6) + 1;
+
+                // Call each of the handlers
+                for (int handlerID = 0; handlerID < handlers.length; handlerID++) {
+
+                    if (handlerComplete[handlerID]) {
+                        continue;
+                    }
+
+                    long startTime = System.nanoTime();
+
+                    int toChange = handlers[handlerID].handleRoll(roll, handlerDice[handlerID]);
+                    if (toChange >= 0 && toChange <= 5) {
+                        handlerDice[handlerID][toChange] = roll;
+                    }
+    
+                    long handleTime = System.nanoTime() - startTime;
+
+                    iterationRolls[handlerID]++;
+                    iterationTime[handlerID] += handleTime;
+
+
+                    if (Rollin.isComplete(handlerDice[handlerID])) {
+                        handlerComplete[handlerID] = true;
+                    }
+                }
+            }
+
+            // Do metrics
+
+            // StringBuilder trialDataSb = new StringBuilder();
+            for (int i = 0; i < handlers.length; i++) {
+                StringBuilder trialDataSb = new StringBuilder();
+
+                trialDataSb.append(trial);
+                trialDataSb.append(", ");
+                trialDataSb.append(iterationRolls[i]);
+                trialDataSb.append(", ");
+                trialDataSb.append(names[i]);
+                System.out.println(trialDataSb.toString());
+
+                // if (includeEfficiencyMetrics) {
+                //     trialDataSb.append(", ");
+                //     trialDataSb.append(iterationTime[i]);
+                // }
+
+                // if (i < handlers.length - 1) {
+                //     trialDataSb.append(", ");
+                // }
+            }
+
+            // System.out.println(trialDataSb.toString());
+
+
+
+            // for (int i = 0; i < handlers.length; i++) {
+
+            //     totalTime[i] += iterationTime[i];
+
+            //     if (iterationRolls[i] > worstRolls[i]) {
+            //         worstRolls[i] = iterationRolls[i];
+            //     }
+
+            //     if (iterationTime[i] > worstTime[i]) {
+            //         worstTime[i] = iterationTime[i];
+            //     }
+            // }
+        }
     }
 
     private static boolean AllTrue(boolean[] all) {
