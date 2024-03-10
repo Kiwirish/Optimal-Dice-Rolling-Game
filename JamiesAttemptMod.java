@@ -1,23 +1,17 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
-public class AvalancheM extends Rollin {
+public class JamiesAttemptMod extends Rollin {
 
     Random R = new Random();
-    private boolean debug = false;
+    Set<Integer> outSet = new HashSet<Integer>();
 
-    public AvalancheM() {
-
+    public JamiesAttemptMod() {
     }
 
-    public AvalancheM(boolean debug) {
-        this.debug = debug;
-    }
-
-    @Override
     public int handleRoll(int roll, int[] dice) {
         // Check for complete
         if (Rollin.isComplete(dice)) {
@@ -26,23 +20,80 @@ public class AvalancheM extends Rollin {
 
         // Check brute force complete
         for (int i = 0; i < dice.length; i++) {
-            int[] copy = CopyArray(dice);
+            int[] copy = dice.clone();
 
             copy[i] = roll;
             if (Rollin.isComplete(copy)) {
-                if (debug) {
-                    System.out.println("ProbSel force complete");
-                }
+                // System.out.println("Brute forced it");
                 return i;
             }
         }
 
+        
+        return checkRolledDiced(roll, dice);
+    }
 
-        // decide which one to change if not instant complete
-        return GetProbSwap(roll, dice);
+    /**
+     * Checks the 6 dice to see what numbers can be rolled to complete it
+     * @param dice
+     * @return The number of possible valid roles that would complete the set
+     */
+    public int checkOuts(int[] dice) {
+        outSet.clear();
 
+        for (int i = 0; i < dice.length - 1; i++) {
+            int[] copyDice = dice.clone();
 
-        // return R.nextInt(6);
+            for (int j = 1; j <= 6; j++) {
+                if (outSet.contains(j)) {
+                    continue;
+                }
+                copyDice[i] = j;
+                if (isComplete(copyDice)) {
+                    outSet.add(j);
+                }
+            }
+
+            if (outSet.size() >= 5) {
+                break;
+            }
+        }
+        //System.out.println(outSet);
+        return outSet.size();
+    }
+
+    /**
+     * 
+     * @param roll
+     * @param dice
+     * @return The index to swap the new roll with.
+     */
+    public int checkRolledDiced(int roll, int[] dice) {
+        int mostOuts = 6; // The return swap index
+        int outs = checkOuts(dice); // The amount of number of valid roles with no change
+
+        for (int i = 0; i < dice.length - 1; i++) {
+            int[] copyDice = dice.clone();
+            copyDice[i] = roll;
+            if (checkOuts(copyDice) > outs) { // if there is more valid roles when swapping in the new roll then use it. update out with new highest value, 
+                outs = checkOuts(copyDice);
+                mostOuts = i; // Updates the swap index return val to the index that was swapped.
+            }
+
+            if (outs >= 5) {
+                break;
+            }
+        }
+
+        if (outs == 0) {
+            // ToDo: if there is not outs but is at least one set, then use either Blake or Matt
+            // return GetProbSwap(roll, dice); // Has a ~20% worst case performance improvement in terms of roles compared to Pomo, negligible average performance impact, worse worst case compute time compared to random.
+            // Other wise use random ?
+            return R.nextInt(6); // Random greatly improves worst case efficiency compared with non mod, also has a ~10% lower worst case roll performance compared to Pomo.
+        }
+        
+
+        return mostOuts;
     }
 
     private int[] CopyArray(int[] a) {
@@ -51,6 +102,16 @@ public class AvalancheM extends Rollin {
             b[i] = a[i]; 
         }
         return b;
+    }
+
+    private int[] SetIndicesToPlainArray(int[] indices, int[] array) {
+        int[] plainArray = new int[indices.length]; 
+
+        for (int i = 0; i < indices.length; i++) {
+            plainArray[i] = array[indices[i]];
+        }
+
+        return plainArray;
     }
 
     private int GetProbSwap(int roll, int[] dice) {
@@ -68,13 +129,33 @@ public class AvalancheM extends Rollin {
         }
 
         if (sets.size() < 1) { // if no set then random
-            if (debug) {
-                System.out.println("ProbSel no set use random (" + sets.size() + ")");
-            }
             return R.nextInt(6);
         } else {
-            if (debug) {
-                System.out.println("ProbSel use smart sel");
+
+            // ToDo: Prune the sets array so that there are no sets that though use different indexes are actually the same
+            HashSet<Integer> toRemove = new HashSet<>();
+            for (int i = sets.size() - 1;  i >= 0; i--) {
+                if (toRemove.contains(i)) {
+                    continue;
+                }
+                int[] compareAgainst = SetIndicesToPlainArray(sets.get(i), dice);
+                for (int j = i - 1; j >= 0; j--) {
+                    if (toRemove.contains(j)) {
+                        continue;
+                    }
+                    int[] thisOne = SetIndicesToPlainArray(sets.get(j), dice);
+                    if (Arrays.equals(compareAgainst, thisOne)) {
+                        // Remove from the array
+                        toRemove.add(j);
+                    }
+                }
+            }
+
+            // Remove them
+            Integer[] indexesToRemove = toRemove.toArray(new Integer[0]);
+            Arrays.sort(indexesToRemove);
+            for (int i = indexesToRemove.length - 1; i >= 0; i--) {
+                sets.remove(i);
             }
         }
 
@@ -104,10 +185,6 @@ public class AvalancheM extends Rollin {
         }
 
         Arrays.sort(scores);
-
-        if (debug) {
-            System.out.println("ProbSel highest score: " + scores[0].GetScore() + ", Lowest: " + scores[scores.length - 1].GetScore() + ", Total: " + scores.length);
-        }
 
         return scores[0].GetSwapIndex();
     }
@@ -152,23 +229,6 @@ public class AvalancheM extends Rollin {
 
         // Find highest scores
         Arrays.sort(possibleNumbers);
-
-        
-        if (debug) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("[");
-            for (int i = 0; i < possibleNumbers.length; i++) {
-                
-                sb.append(possibleNumbers[i].toString());
-                if (i < possibleNumbers.length - 1) {
-                    sb.append(", ");
-                }
-                
-            }
-            sb.append("]");
-            
-            System.out.println("ProbSel Scoring - PN: " + sb.toString());
-        }
 
         return new Scoring(possibleNumbers[0].GetSwapIndex(), possibleNumbers[0].GetScore());
     }
@@ -218,7 +278,7 @@ public class AvalancheM extends Rollin {
         }
 
         @Override
-        public int compareTo(AvalancheM.Scoring o) {
+        public int compareTo(JamiesAttemptMod.Scoring o) {
             if (this.GetScore() == o.GetScore()) 
                 return 0; 
             else if (this.GetScore() < o.GetScore()) 
@@ -268,7 +328,7 @@ public class AvalancheM extends Rollin {
         }
 
         @Override
-        public int compareTo(AvalancheM.IndexAndSet o) {
+        public int compareTo(JamiesAttemptMod.IndexAndSet o) {
             if (this.GetScore() == o.GetScore()) 
                 return 0; 
             else if (this.GetScore() < o.GetScore()) 
@@ -278,18 +338,4 @@ public class AvalancheM extends Rollin {
         }
     }
 
-    public class IndexAndSetComparator implements Comparator<IndexAndSet> { 
-  
-        // override the compare() method 
-        public int compare(IndexAndSet s1, IndexAndSet s2) 
-        { 
-            if (s1.GetHastSet().size() == s2.GetHastSet().size()) 
-                return 0; 
-            else if (s1.GetHastSet().size() < s2.GetHastSet().size()) 
-                return 1; 
-            else
-                return -1; 
-        } 
-    } 
-    
 }
