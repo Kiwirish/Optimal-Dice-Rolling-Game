@@ -3,17 +3,18 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
-public class AvalancheM extends Rollin {
+public class AvalancheProbSel extends Rollin {
 
     Random R = new Random();
     private boolean debug = false;
 
-    public AvalancheM() {
+    public AvalancheProbSel() {
 
     }
 
-    public AvalancheM(boolean debug) {
+    public AvalancheProbSel(boolean debug) {
         this.debug = debug;
     }
 
@@ -40,9 +41,6 @@ public class AvalancheM extends Rollin {
 
         // decide which one to change if not instant complete
         return GetProbSwap(roll, dice);
-
-
-        // return R.nextInt(6);
     }
 
     private int[] CopyArray(int[] a) {
@@ -51,6 +49,16 @@ public class AvalancheM extends Rollin {
             b[i] = a[i]; 
         }
         return b;
+    }
+
+    private int[] SetIndicesToPlainArray(int[] indices, int[] array) {
+        int[] plainArray = new int[indices.length]; 
+
+        for (int i = 0; i < indices.length; i++) {
+            plainArray[i] = array[indices[i]];
+        }
+
+        return plainArray;
     }
 
     private int GetProbSwap(int roll, int[] dice) {
@@ -73,6 +81,33 @@ public class AvalancheM extends Rollin {
             }
             return R.nextInt(6);
         } else {
+
+            // ToDo: Prune the sets array so that there are no sets that though use different indexes are actually the same
+            HashSet<Integer> toRemove = new HashSet<>();
+            for (int i = sets.size() - 1;  i >= 0; i--) {
+                if (toRemove.contains(i)) {
+                    continue;
+                }
+                int[] compareAgainst = SetIndicesToPlainArray(sets.get(i), dice);
+                for (int j = i - 1; j >= 0; j--) {
+                    if (toRemove.contains(j)) {
+                        continue;
+                    }
+                    int[] thisOne = SetIndicesToPlainArray(sets.get(j), dice);
+                    if (Arrays.equals(compareAgainst, thisOne)) {
+                        // Remove from the array
+                        toRemove.add(j);
+                    }
+                }
+            }
+
+            // Remove them
+            Integer[] indexesToRemove = toRemove.toArray(new Integer[0]);
+            Arrays.sort(indexesToRemove);
+            for (int i = indexesToRemove.length - 1; i >= 0; i--) {
+                sets.remove(i);
+            }
+
             if (debug) {
                 System.out.println("ProbSel use smart sel");
             }
@@ -218,7 +253,7 @@ public class AvalancheM extends Rollin {
         }
 
         @Override
-        public int compareTo(AvalancheM.Scoring o) {
+        public int compareTo(AvalancheProbSel.Scoring o) {
             if (this.GetScore() == o.GetScore()) 
                 return 0; 
             else if (this.GetScore() < o.GetScore()) 
@@ -268,7 +303,7 @@ public class AvalancheM extends Rollin {
         }
 
         @Override
-        public int compareTo(AvalancheM.IndexAndSet o) {
+        public int compareTo(AvalancheProbSel.IndexAndSet o) {
             if (this.GetScore() == o.GetScore()) 
                 return 0; 
             else if (this.GetScore() < o.GetScore()) 
@@ -277,19 +312,5 @@ public class AvalancheM extends Rollin {
                 return -1; 
         }
     }
-
-    public class IndexAndSetComparator implements Comparator<IndexAndSet> { 
-  
-        // override the compare() method 
-        public int compare(IndexAndSet s1, IndexAndSet s2) 
-        { 
-            if (s1.GetHastSet().size() == s2.GetHastSet().size()) 
-                return 0; 
-            else if (s1.GetHastSet().size() < s2.GetHastSet().size()) 
-                return 1; 
-            else
-                return -1; 
-        } 
-    } 
     
 }

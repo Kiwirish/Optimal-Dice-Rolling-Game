@@ -1,0 +1,54 @@
+# Analysis of Algorithm Performance
+
+This analysis will focus on the relative amount of rolls used by each of the algorithms to solve a given input.
+
+```{r}
+roll_data <- read.csv("test3.csv")
+head(roll_data)
+```
+
+## Some Histogram Plots for each Algorithm
+
+```{r}
+library(ggplot2)
+hist_plot <- function(data, axis, gtitle) {
+  ggplot(data, aes(x=axis)) +
+    geom_histogram(binwidth = 1, fill="white", color="black") +
+    labs(title = gtitle, x="Rolls to complete a trial")
+}
+```
+
+```{r}
+hist_plot(roll_data, roll_data$Rand_Rolls, "Rand Rolls")
+```
+
+```{r}
+hist_plot(roll_data, roll_data$Aval_Rolls, "Rand Rolls")
+```
+
+```{r}
+hist_plot(roll_data, roll_data$Pomo_Rolls, "Rand Rolls")
+```
+
+```{r}
+hist_plot(roll_data, roll_data$ProbSel_Rolls, "Rand Rolls")
+```
+
+
+```{r}
+ggplot(roll_data) +
+  geom_histogram(binwidth = 1, fill="white", aes(x=Aval_Rolls), alpha=1) +
+  geom_histogram(binwidth = 1, fill="cyan", aes(x=Pomo_Rolls), alpha=1) +
+  geom_histogram(binwidth = 1, fill="yellow", aes(x=ProbSel_Rolls), alpha=1) +
+  geom_histogram(binwidth = 1, fill="pink", aes(x=JamiesMod_Rolls), alpha=1) +
+  labs(title = "Comparison", x="Rolls to complete a trial")
+```
+
+```{r}
+ggplot(roll_data) +
+  geom_histogram(binwidth = 1, fill="white", aes(x=Aval_Rolls), alpha=1) +
+  geom_histogram(binwidth = 1, fill="cyan", aes(x=Pomo_Rolls), alpha=1) +
+  geom_histogram(binwidth = 1, fill="yellow", aes(x=ProbSel_Rolls), alpha=1) +
+  geom_histogram(binwidth = 1, fill="pink", aes(x=JamiesMod_Rolls), alpha=1) +
+  labs(title = "Comparison", x="Rolls to complete a trial")
+```

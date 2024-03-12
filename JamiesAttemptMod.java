@@ -1,11 +1,13 @@
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
-public class JamiesAttempt extends Rollin {
+public class JamiesAttemptMod extends Rollin {
 
+    Random R = new Random();
     Set<Integer> outSet = new HashSet<Integer>();
 
-    public JamiesAttempt() {
+    public JamiesAttemptMod() {
     }
 
     public int handleRoll(int roll, int[] dice) {
@@ -41,10 +43,17 @@ public class JamiesAttempt extends Rollin {
             int[] copyDice = dice.clone();
 
             for (int j = 1; j <= 6; j++) {
+                if (outSet.contains(j)) {
+                    continue;
+                }
                 copyDice[i] = j;
                 if (isComplete(copyDice)) {
                     outSet.add(j);
                 }
+            }
+
+            if (outSet.size() >= 5) {
+                break;
             }
         }
         //System.out.println(outSet);
@@ -68,6 +77,15 @@ public class JamiesAttempt extends Rollin {
                 outs = checkOuts(copyDice);
                 mostOuts = i; // Updates the swap index return val to the index that was swapped.
             }
+
+            if (outs >= 5) {
+                break;
+            }
+        }
+
+        if (outs == 0) {
+            
+            return R.nextInt(6); // Random greatly improves worst case efficiency compared with non mod, also has a ~10% lower worst case roll performance compared to Pomo.
         }
         
 
