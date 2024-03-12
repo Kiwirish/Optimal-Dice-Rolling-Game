@@ -84,27 +84,21 @@ public class Test {
             // RunTestGeneric(numOfTrials, new JamiesAttemptMod(), "JamiesMod");
 
             Rollin[] handlers = {
-                new RandomRoller(),
-                new Avalanche(),
                 new PlusOrMinusOne(),
                 new AvalancheProbSel(),
-                new FirstAttemptBlake(),
                 new JamiesAttemptMod(),
                 new JamiesAttempt()
             };
 
             String[] names = {
-                "Rand",
-                "Aval",
                 "Pomo",
                 "ProbSel",
-                "Blake",
                 "JamiesMod",
                 "JamiesOriginal"
             };
 
-            RunTest(numOfTrials, handlers, names, true);
-            // RunTestStatOutCSV(1000, handlers, names, true);
+            // RunTest(numOfTrials, handlers, names, true);
+            RunTestStatOutCSV(1000, handlers, names, true);
 
         }        
     }
