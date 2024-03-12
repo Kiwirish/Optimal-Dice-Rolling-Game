@@ -3,7 +3,7 @@
 This analysis will focus on the relative amount of rolls used by each of the algorithms to solve a given input.
 
 ```{r}
-roll_data <- read.csv("test_data_2.csv")
+roll_data <- read.csv("test_data_3.csv")
 head(roll_data)
 ```
 
@@ -20,7 +20,7 @@ ggplot(pl_data, aes(x=Rolls, fill=Algorithm_Type)) +
 ```
 
 ```{r}
-pl_data = roll_data[roll_data$Rolls < 10,]
+pl_data = roll_data[roll_data$Rolls < 30,]
 ggplot(pl_data, aes(x=Rolls, fill=Algorithm_Type)) +
   geom_histogram(binwidth = 1) +
   facet_wrap(~Algorithm_Type)
