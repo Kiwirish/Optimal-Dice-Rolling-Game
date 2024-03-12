@@ -90,7 +90,8 @@ public class Test {
                 new AvalancheProbSel(),
                 new FirstAttemptBlake(),
                 new JamiesAttemptMod(),
-                new JamiesAttempt()
+                new JamiesAttempt(),
+                new HopefulImprovement()
             };
 
             String[] names = {
@@ -100,7 +101,8 @@ public class Test {
                 "ProbSel",
                 "Blake",
                 "JamiesMod",
-                "JamiesOriginal"
+                "JamiesOriginal",
+                "BlakeImprovement"
             };
 
             RunTest(numOfTrials, handlers, names, true);
