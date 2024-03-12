@@ -87,14 +87,16 @@ public class Test {
                 new PlusOrMinusOne(),
                 new AvalancheProbSel(),
                 new JamiesAttemptMod(),
-                new JamiesAttempt()
+                new JamiesAttempt(),
+                new HopefulImprovement()
             };
 
             String[] names = {
                 "Pomo",
                 "ProbSel",
                 "JamiesMod",
-                "JamiesOriginal"
+                "JamiesOriginal",
+                "BlakeImprovement"
             };
 
             // RunTest(numOfTrials, handlers, names, true);
