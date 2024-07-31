@@ -1,5 +1,6 @@
-# Etude 2 - Rollin Rollin Rollin
+# Optimal Dice Rolling 
 
+This project is a simple game that uses ordinary six-sided dice. The game starts with six dice in a random configuration. On each turn, you roll one more die and then have the option to exchange it for any one of your current dice. The objective of the game is to form two sets of three dice as quickly as possible. A valid set consists of either three dice showing the same number (e.g., 444) or three dice in sequence (e.g., 123 or 345).
 
 ## Strategy
 
